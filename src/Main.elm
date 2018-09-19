@@ -3,6 +3,7 @@ module Main exposing (main)
 import Html
 import Plane exposing (boundingbox, fromPair)
 import Quadtree
+import Quadtree.Kernel exposing (debug)
 
 
 main =
@@ -16,5 +17,10 @@ main =
 
         quadtree =
             Maybe.map (\b -> Quadtree.for b points) box
+
+        text
+            = quadtree
+              |> Maybe.map (\t -> debug (Debug.toString) t)
+              |> Maybe.withDefault "" 
     in
-    Html.text "Hello, World!"
+    Html.text text
