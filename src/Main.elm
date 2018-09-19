@@ -13,5 +13,8 @@ main =
 
         box =
             boundingbox points
+
+        quadtree =
+            Maybe.map (\b -> Quadtree.for b points) box
     in
     Html.text "Hello, World!"

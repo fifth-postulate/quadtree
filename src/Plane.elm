@@ -1,4 +1,4 @@
-module Plane exposing (Box, Point, boundingbox, box, fromPair)
+module Plane exposing (Box, Point, boundingbox, box, contains, fromPair, subdivide)
 
 {-| A `Point` represents a point in the plane.
 -}
@@ -67,3 +67,32 @@ add (Point { x, y }) (Box { xll, yll, xur, yur }) =
         (min y yll)
         (max x xur)
         (max y yur)
+
+{-| Determines if the `Box` contains the `Point`
+-}
+contains : Box Float -> Point Float -> Bool
+contains (Box { xll, yll, xur, yur }) (Point { x, y }) =
+    (xll <= x)
+        && (x <= xur)
+        && (yll <= y)
+        && (y <= yur)
+
+
+{-| Subdivides a `Box` in its four quadrants
+-}
+subdivide : Box Float -> ( ( Box Float, Box Float ), ( Box Float, Box Float ) )
+subdivide (Box { xll, yll, xur, yur }) =
+    let
+        xmid =
+            (xll + xur) / 2
+
+        ymid =
+            (yll + yur) / 2
+    in
+    ( ( box xmid ymid xur yur
+      , box xll ymid xmid yur
+      )
+    , ( box xll yll xmid ymid
+      , box xmid yll xur ymid
+      )
+    )
