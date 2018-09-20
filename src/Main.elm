@@ -1,8 +1,10 @@
 module Main exposing (main)
 
 import Html
-import Plane exposing (boundingbox, fromPair)
-import Quadtree exposing (debug)
+import Plane exposing (boundingbox, boxToSvg, fromPair, pointToSvg)
+import Quadtree exposing (quadtreeToSvg)
+import Svg
+import Svg.Attributes as Attribute
 
 
 main =
@@ -12,14 +14,19 @@ main =
                 |> List.map fromPair
 
         box =
-            boundingbox points
+            Just (Plane.box 0 0 51 51)
 
         quadtree =
             Maybe.map (\b -> Quadtree.for b points) box
 
-        text
-            = quadtree
-              |> Maybe.map (\t -> debug (Debug.toString) t)
-              |> Maybe.withDefault ""
+        svg =
+            quadtree
+                |> Maybe.map (\t -> quadtreeToSvg (pointToSvg identity) t)
+                |> Maybe.withDefault []
     in
-    Html.text text
+    Svg.svg
+        [ Attribute.width "640"
+        , Attribute.height "640"
+        , Attribute.viewBox "0 0 51 51"
+        ]
+        svg

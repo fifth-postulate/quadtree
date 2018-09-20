@@ -1,9 +1,25 @@
-module Plane exposing (Box, Point, Subdivision, boundingbox, box, contains, fromPair, subdivide)
+module Plane exposing
+    ( Box
+    , Point
+    , Subdivision
+    , boundingbox
+    , box
+    , boxToSvg
+    , contains
+    , fromPair
+    , pointToSvg
+    , subdivide
+    )
+
+{-| The Plane module provides abstractions for working with points in the plane.
+-}
+
+import Svg
+import Svg.Attributes as Attribute
+
 
 {-| A `Point` represents a point in the plane.
 -}
-
-
 type Point t
     = Point { x : t, y : t }
 
@@ -70,6 +86,11 @@ add (Point { x, y }) (Box { xll, yll, xur, yur }) =
 
 
 {-| Determines if the `Box` contains the `Point`
+
+Two comparison functions are passed as argument. The first determines if a point
+on the left edge should be contained in the box. The second determines if a
+point on the bottom edge should be contained in the box.
+
 -}
 contains : (comparable -> comparable -> Bool) -> (comparable -> comparable -> Bool) -> Box comparable -> Point comparable -> Bool
 contains left bottom (Box { xll, yll, xur, yur }) (Point { x, y }) =
@@ -105,3 +126,63 @@ subdivide (Box { xll, yll, xur, yur }) =
     , sw = box xll yll xmid ymid
     , se = box xmid yll xur ymid
     }
+
+
+{-| Turn a `Point` into Svg.
+-}
+pointToSvg : (t -> Float) -> Point t -> List (Svg.Svg msg)
+pointToSvg toFloat (Point { x, y }) =
+    let
+        cx =
+            x
+                |> toFloat
+                |> String.fromFloat
+
+        cy =
+            y
+                |> toFloat
+                |> String.fromFloat
+    in
+    [ Svg.circle
+        [ Attribute.cx cx
+        , Attribute.cy cy
+        , Attribute.r "0.3"
+        ]
+        []
+    ]
+
+
+{-| Turn a `Box` into Svg.
+-}
+boxToSvg : (t -> Float) -> Box t -> List (Svg.Svg msg)
+boxToSvg toFloat (Box { xll, yll, xur, yur }) =
+    let
+        x =
+            xll
+                |> toFloat
+                |> String.fromFloat
+
+        y =
+            yll
+                |> toFloat
+                |> String.fromFloat
+
+        width =
+            (toFloat xur - toFloat xll)
+                |> String.fromFloat
+
+        height =
+            (toFloat yur - toFloat yll)
+                |> String.fromFloat
+    in
+    [ Svg.rect
+        [ Attribute.x x
+        , Attribute.y y
+        , Attribute.width width
+        , Attribute.height height
+        , Attribute.fill "none"
+        , Attribute.stroke "black"
+        , Attribute.strokeWidth "0.1"
+        ]
+        []
+    ]

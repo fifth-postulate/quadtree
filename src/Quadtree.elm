@@ -1,7 +1,9 @@
-module Quadtree exposing (Quadtree, debug, for)
+module Quadtree exposing (Quadtree, debug, for, quadtreeToSvg)
 
-import Plane exposing (Box, Point, contains, subdivide)
+import Plane exposing (Box, Point, boxToSvg, contains, subdivide)
 import Quadtree.Kernel as Kernel
+import Svg
+import Svg.Attributes as Attribute
 
 
 {-| Alias for the `Kernel.Quadtree`.
@@ -54,7 +56,21 @@ for box points =
                 (for se sePoints)
 
 
-{-| Debug a `Quadtree`
+{-| Return a Svg representation of the `QuadTree`.
+-}
+quadtreeToSvg : (t -> List (Svg.Svg msg)) -> Quadtree t -> List (Svg.Svg msg)
+quadtreeToSvg valueToSvg tree =
+    let
+        leafToSvg box value =
+            (boxToSvg identity box) ++ valueToSvg value
+
+        nodeToSvg box ne nw sw se =
+            (boxToSvg identity box) ++ ne ++ nw ++ sw ++ se
+    in
+    Kernel.walk (boxToSvg identity) leafToSvg nodeToSvg tree
+
+
+{-| Debug a `Quadtree`.
 -}
 debug : (t -> String) -> Quadtree t -> String
 debug =

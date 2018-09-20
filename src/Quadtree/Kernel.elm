@@ -1,4 +1,4 @@
-module Quadtree.Kernel exposing (Quadtree, debug, empty, node, singleton)
+module Quadtree.Kernel exposing (Quadtree, debug, empty, node, singleton, walk)
 
 {-| A quadtree is a tree data structure in which each internal node has exactly four children
 -}
@@ -19,7 +19,7 @@ empty info =
 
 {-| Returns a `Quadtree` with the single element
 -}
-singleton : i ->  a -> Quadtree i a
+singleton : i -> a -> Quadtree i a
 singleton info value =
     Leaf info value
 
