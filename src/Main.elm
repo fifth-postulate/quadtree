@@ -3,8 +3,10 @@ module Main exposing (main)
 import Browser
 import Html
 import Html.Attributes as Attribute
-import Plane exposing (Box, Point, boundingbox, boxToSvg, fromPair, pointToSvg)
+import Html.Events as Event
+import Plane exposing (Box, Point, boundingbox, boxToSvg, fromPair, point, pointToSvg)
 import Quadtree exposing (Quadtree, quadtreeToSvg)
+import Random
 import Svg
 import Svg.Attributes as SvgAttribute
 
@@ -48,11 +50,35 @@ emptyModel numberOfPoints box =
 
 type Message
     = GeneratePoints
+    | Points (List (Point Float))
 
 
 update : Message -> Model -> ( Model, Cmd Message )
 update message model =
-    ( model, Cmd.none )
+    case message of
+        GeneratePoints ->
+            let
+                pointGenerator =
+                    Random.float 0 100
+                        |> point
+
+                pointsGenerator =
+                    Random.list model.numberOfPoints pointGenerator
+
+                command =
+                    Random.generate Points pointsGenerator
+            in
+            ( model, command )
+
+        Points points ->
+            let
+                quadtree =
+                    Quadtree.for model.box (Debug.log "points: " points)
+
+                m =
+                    { model | quadtree = quadtree }
+            in
+            ( m, Cmd.none )
 
 
 
@@ -68,7 +94,7 @@ view model =
     in
     Html.div []
         [ Html.div [ Attribute.class "control" ]
-            [ Html.button [] [ Html.text "generate" ]
+            [ Html.button [ Event.onClick GeneratePoints ] [ Html.text "generate" ]
             ]
         , Svg.svg
             [ SvgAttribute.width "640"
@@ -77,25 +103,3 @@ view model =
             ]
             svg
         ]
-
-
-
--- let
---     points =
---         [ ( 0, 0 ), ( 37, 51 ), ( 1, 2 ), ( 2, 3 ), ( 3, 5 ), ( 5, 8 ) ]
---             |> List.map fromPair
---     box =
---         Just (Plane.box 0 0 51 51)
---     quadtree =
---         Maybe.map (\b -> Quadtree.for b points) box
---     svg =
---         quadtree
---             |> Maybe.map (\t -> quadtreeToSvg (pointToSvg identity) t)
---             |> Maybe.withDefault []
--- in
--- Svg.svg
---     [ Attribute.width "640"
---     , Attribute.height "640"
---     , Attribute.viewBox "0 0 51 51"
---     ]
---     svg
