@@ -5,7 +5,7 @@ import Quadtree.Kernel as Kernel
 
 
 type alias Quadtree t =
-    Kernel.Quadtree () t
+    Kernel.Quadtree (Box Float) t
 
 for : Box Float -> List (Point Float) -> Quadtree (Point Float)
 for box points =
@@ -16,10 +16,10 @@ for box points =
     in
     case containedPoints of
         [] ->
-            Kernel.empty ()
+            Kernel.empty box
 
         p :: [] ->
-            Kernel.singleton () p
+            Kernel.singleton box p
 
         _ as ps ->
             let
@@ -39,7 +39,7 @@ for box points =
                     List.filter (contains (<) (<=) se) ps
             in
             Kernel.node
-                ()
+                box
                 (for ne nePoints)
                 (for nw nwPoints)
                 (for sw swPoints)
