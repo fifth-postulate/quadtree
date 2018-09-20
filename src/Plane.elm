@@ -71,11 +71,11 @@ add (Point { x, y }) (Box { xll, yll, xur, yur }) =
 
 {-| Determines if the `Box` contains the `Point`
 -}
-contains : Box comparable -> Point comparable -> Bool
-contains (Box { xll, yll, xur, yur }) (Point { x, y }) =
-    (xll <= x)
+contains : (comparable -> comparable -> Bool) -> (comparable -> comparable -> Bool) -> Box comparable -> Point comparable -> Bool
+contains left bottom (Box { xll, yll, xur, yur }) (Point { x, y }) =
+    left xll x
         && (x <= xur)
-        && (yll <= y)
+        && bottom yll y
         && (y <= yur)
 
 

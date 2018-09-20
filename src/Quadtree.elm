@@ -12,7 +12,7 @@ for box points =
     let
         containedPoints =
             points
-                |> List.filter (contains box)
+                |> List.filter (contains (<=) (<=) box)
     in
     case containedPoints of
         [] ->
@@ -27,16 +27,16 @@ for box points =
                     subdivide box
 
                 nePoints =
-                    List.filter (contains ne) ps
+                    List.filter (contains (<) (<) ne) ps
 
                 nwPoints =
-                    List.filter (contains nw) ps
+                    List.filter (contains (<=) (<) nw) ps
 
                 swPoints =
-                    List.filter (contains sw) ps
+                    List.filter (contains (<=) (<=) sw) ps
 
                 sePoints =
-                    List.filter (contains se) ps
+                    List.filter (contains (<) (<=) se) ps
             in
             Kernel.node
                 ()
