@@ -1,4 +1,4 @@
-module Quadtree.Kernel exposing (Quadtree, empty, singleton, node, debug)
+module Quadtree.Kernel exposing (Quadtree, debug, empty, node, singleton)
 
 {-| A quadtree is a tree data structure in which each internal node has exactly four children
 -}
@@ -35,17 +35,34 @@ node ne nw sw se =
 -}
 debug : (t -> String) -> Quadtree t -> String
 debug vizualize tree =
+    walk
+        (\_ -> "(empty)")
+        (\t -> "(leaf " ++ vizualize t ++ ")")
+        (\ne nw sw se -> "(node " ++ ne ++ nw ++ sw ++ se ++ ")")
+        tree
+
+
+walk : (() -> o) -> (t -> o) -> (o -> o -> o -> o -> o) -> Quadtree t -> o
+walk emptyCase leafCase nodeCase tree =
     case tree of
         Empty ->
-            "(empty)"
+            emptyCase ()
 
         Leaf value ->
-            "(leaf " ++ (vizualize value) ++ ")"
+            leafCase value
 
         Node ne nw sw se ->
-            "(node "
-                ++ debug vizualize ne
-                ++ debug vizualize nw
-                ++ debug vizualize sw
-                ++ debug vizualize se
-                ++ ")"
+            let
+                one =
+                    walk emptyCase leafCase nodeCase ne
+
+                onw =
+                    walk emptyCase leafCase nodeCase nw
+
+                osw =
+                    walk emptyCase leafCase nodeCase sw
+
+                ose =
+                    walk emptyCase leafCase nodeCase se
+            in
+            nodeCase one onw osw ose

@@ -21,6 +21,6 @@ main =
         text
             = quadtree
               |> Maybe.map (\t -> debug (Debug.toString) t)
-              |> Maybe.withDefault "" 
+              |> Maybe.withDefault ""
     in
     Html.text text

@@ -24,25 +24,25 @@ for box points =
 
         _ as ps ->
             let
-                ( ( nwBox, neBox ), ( seBox, swBox ) ) =
+                { ne, nw, sw, se } =
                     subdivide box
 
-                nwPoints =
-                    List.filter (contains nwBox) ps
-
                 nePoints =
-                    List.filter (contains neBox) ps
+                    List.filter (contains ne) ps
 
-                sePoints =
-                    List.filter (contains seBox) ps
+                nwPoints =
+                    List.filter (contains nw) ps
 
                 swPoints =
-                    List.filter (contains swBox) ps
+                    List.filter (contains sw) ps
+
+                sePoints =
+                    List.filter (contains se) ps
             in
             Kernel.node
-                (for nwBox nwPoints)
-                (for neBox nePoints)
-                (for seBox sePoints)
-                (for swBox swPoints)
+                (for ne nePoints)
+                (for nw nwPoints)
+                (for sw swPoints)
+                (for se sePoints)
 
 
