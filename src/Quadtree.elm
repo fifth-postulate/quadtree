@@ -1,12 +1,11 @@
-module Quadtree exposing (Quadtree, for)
+module Quadtree exposing (Quadtree, for, debug)
 
 import Plane exposing (Box, Point, contains, subdivide)
 import Quadtree.Kernel as Kernel
 
 
 type alias Quadtree t =
-    Kernel.Quadtree t
-
+    Kernel.Quadtree () t
 
 for : Box Float -> List (Point Float) -> Quadtree (Point Float)
 for box points =
@@ -17,10 +16,10 @@ for box points =
     in
     case containedPoints of
         [] ->
-            Kernel.empty
+            Kernel.empty ()
 
         p :: [] ->
-            Kernel.singleton p
+            Kernel.singleton () p
 
         _ as ps ->
             let
@@ -40,9 +39,15 @@ for box points =
                     List.filter (contains se) ps
             in
             Kernel.node
+                ()
                 (for ne nePoints)
                 (for nw nwPoints)
                 (for sw swPoints)
                 (for se sePoints)
 
+
+
+debug : (t -> String) -> Quadtree t -> String
+debug =
+    Kernel.debug (\_ -> "")
 

@@ -4,54 +4,54 @@ module Quadtree.Kernel exposing (Quadtree, debug, empty, node, singleton)
 -}
 
 
-type Quadtree a
-    = Empty
-    | Leaf a
-    | Node (Quadtree a) (Quadtree a) (Quadtree a) (Quadtree a)
+type Quadtree i a
+    = Empty i
+    | Leaf i a
+    | Node i (Quadtree i a) (Quadtree i a) (Quadtree i a) (Quadtree i a)
 
 
 {-| Returns the empty `Quadtree`
 -}
-empty : Quadtree a
-empty =
-    Empty
+empty : i -> Quadtree i a
+empty info =
+    Empty info
 
 
 {-| Returns a `Quadtree` with the single element
 -}
-singleton : a -> Quadtree a
-singleton value =
-    Leaf value
+singleton : i ->  a -> Quadtree i a
+singleton info value =
+    Leaf info value
 
 
 {-| Return a `Quadtree` with the four sub-trees
 -}
-node : Quadtree a -> Quadtree a -> Quadtree a -> Quadtree a -> Quadtree a
-node ne nw sw se =
-    Node ne nw sw se
+node : i -> Quadtree i a -> Quadtree i a -> Quadtree i a -> Quadtree i a -> Quadtree i a
+node info ne nw sw se =
+    Node info ne nw sw se
 
 
 {-| Return a debug String of the `Quadtree`
 -}
-debug : (t -> String) -> Quadtree t -> String
-debug vizualize tree =
+debug : (i -> String) -> (t -> String) -> Quadtree i t -> String
+debug infoToString valueToString tree =
     walk
-        (\_ -> "(empty)")
-        (\t -> "(leaf " ++ vizualize t ++ ")")
-        (\ne nw sw se -> "(node " ++ ne ++ nw ++ sw ++ se ++ ")")
+        (\i -> "(empty " ++ infoToString i ++ ")")
+        (\i t -> "(leaf " ++ infoToString i ++ valueToString t ++ ")")
+        (\i ne nw sw se -> "(node " ++ infoToString i ++ ne ++ nw ++ sw ++ se ++ ")")
         tree
 
 
-walk : (() -> o) -> (t -> o) -> (o -> o -> o -> o -> o) -> Quadtree t -> o
+walk : (i -> o) -> (i -> t -> o) -> (i -> o -> o -> o -> o -> o) -> Quadtree i t -> o
 walk emptyCase leafCase nodeCase tree =
     case tree of
-        Empty ->
-            emptyCase ()
+        Empty info ->
+            emptyCase info
 
-        Leaf value ->
-            leafCase value
+        Leaf info value ->
+            leafCase info value
 
-        Node ne nw sw se ->
+        Node info ne nw sw se ->
             let
                 one =
                     walk emptyCase leafCase nodeCase ne
@@ -65,4 +65,4 @@ walk emptyCase leafCase nodeCase tree =
                 ose =
                     walk emptyCase leafCase nodeCase se
             in
-            nodeCase one onw osw ose
+            nodeCase info one onw osw ose

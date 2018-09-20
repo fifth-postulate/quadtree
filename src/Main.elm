@@ -2,8 +2,7 @@ module Main exposing (main)
 
 import Html
 import Plane exposing (boundingbox, fromPair)
-import Quadtree
-import Quadtree.Kernel exposing (debug)
+import Quadtree exposing (debug)
 
 
 main =
