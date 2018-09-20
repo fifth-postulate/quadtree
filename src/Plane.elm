@@ -71,7 +71,7 @@ add (Point { x, y }) (Box { xll, yll, xur, yur }) =
 
 {-| Determines if the `Box` contains the `Point`
 -}
-contains : Box Float -> Point Float -> Bool
+contains : Box comparable -> Point comparable -> Bool
 contains (Box { xll, yll, xur, yur }) (Point { x, y }) =
     (xll <= x)
         && (x <= xur)
