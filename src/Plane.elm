@@ -7,6 +7,7 @@ module Plane exposing
     , boxToSvg
     , contains
     , fromPair
+    , point
     , pointToSvg
     , subdivide
     )
@@ -14,6 +15,7 @@ module Plane exposing
 {-| The Plane module provides abstractions for working with points in the plane.
 -}
 
+import Random
 import Svg
 import Svg.Attributes as Attribute
 
@@ -22,6 +24,14 @@ import Svg.Attributes as Attribute
 -}
 type Point t
     = Point { x : t, y : t }
+
+
+{-| A random generator `Point`s.
+-}
+point : Random.Generator t -> Random.Generator (Point t)
+point generator =
+    Random.pair generator generator
+        |> Random.map (\( x, y ) -> Point { x = x, y = y })
 
 
 {-| Create a `Point` from a tuple.
