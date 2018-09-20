@@ -13,12 +13,8 @@ import Svg.Attributes as SvgAttribute
 
 main : Program () Model Message
 main =
-    let
-        box =
-            Plane.box 0 0 100 100
-    in
     Browser.element
-        { init = \_ -> ( emptyModel 10 box, Cmd.none )
+        { init = \_ -> ( emptyModel 10 100, Cmd.none )
         , update = update
         , view = view
         , subscriptions = \_ -> Sub.none
@@ -31,14 +27,20 @@ main =
 
 type alias Model =
     { numberOfPoints : Int
+    , size : Float
     , box : Plane.Box Float
     , quadtree : Quadtree (Point Float)
     }
 
 
-emptyModel : Int -> Box Float -> Model
-emptyModel numberOfPoints box =
+emptyModel : Int -> Float -> Model
+emptyModel numberOfPoints size =
+    let
+        box =
+            Plane.box 0 0 size size
+    in
     { numberOfPoints = numberOfPoints
+    , size = size
     , box = box
     , quadtree = Quadtree.for box []
     }
@@ -59,7 +61,7 @@ update message model =
         GeneratePoints ->
             let
                 pointGenerator =
-                    Random.float 0 100
+                    Random.float 0 model.size
                         |> point
 
                 pointsGenerator =
@@ -73,7 +75,7 @@ update message model =
         Points points ->
             let
                 quadtree =
-                    Quadtree.for model.box (Debug.log "points: " points)
+                    Quadtree.for model.box points
 
                 m =
                     { model | quadtree = quadtree }
@@ -91,6 +93,11 @@ view model =
         svg =
             model.quadtree
                 |> quadtreeToSvg (pointToSvg identity)
+
+        viewBox =
+            [ 0, 0, model.size, model.size ]
+                |> List.map String.fromFloat
+                |> String.join " "
     in
     Html.div []
         [ Html.div [ Attribute.class "control" ]
@@ -99,7 +106,7 @@ view model =
         , Svg.svg
             [ SvgAttribute.width "640"
             , SvgAttribute.height "640"
-            , SvgAttribute.viewBox "0 0 100 100"
+            , SvgAttribute.viewBox viewBox
             ]
             svg
         ]
