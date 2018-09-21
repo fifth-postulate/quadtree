@@ -14,7 +14,7 @@ import Svg.Attributes as SvgAttribute
 main : Program () Model Message
 main =
     Browser.element
-        { init = \_ -> ( emptyModel 10 100, Cmd.none )
+        { init = \_ -> ( emptyModel 100 100, Cmd.none )
         , update = update
         , view = view
         , subscriptions = \_ -> Sub.none
