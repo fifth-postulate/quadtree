@@ -1,4 +1,4 @@
-module Quadtree.Kernel exposing (Quadtree, debug, empty, node, singleton, walk)
+module Quadtree.Kernel exposing (CountInfo, Quadtree, count, debug, empty, node, singleton, walk)
 
 {-| A quadtree is a tree data structure in which each internal node has exactly four children
 -}
@@ -42,6 +42,50 @@ debug infoToString valueToString tree =
         tree
 
 
+{-| Keeps track of various vertices of a `Quadtree`.
+-}
+type alias CountInfo =
+    { empty : Int
+    , leaf : Int
+    , node : Int
+    }
+
+
+{-| Count the various types of vertices
+-}
+count : Quadtree i a -> CountInfo
+count tree =
+    let
+        emptyInfo =
+            { empty = 0
+            , leaf = 0
+            , node = 0
+            }
+
+        emptyCase _ =
+            { emptyInfo | empty = 1 }
+
+        leafCase _ _ =
+            { emptyInfo | leaf = 1 }
+
+        combine left right =
+            { empty = left.empty + right.empty
+            , leaf = left.leaf + right.leaf
+            , node = left.node + right.node
+            }
+
+        nodeCase _ ne nw sw se =
+            {emptyInfo | node = 1 }
+                |> combine ne
+                |> combine nw
+                |> combine sw
+                |> combine se
+    in
+    walk emptyCase leafCase nodeCase tree
+
+
+{-| Walks over a tree, combining information about Empty, Leaf and Nodes.
+-}
 walk : (i -> o) -> (i -> t -> o) -> (i -> o -> o -> o -> o -> o) -> Quadtree i t -> o
 walk emptyCase leafCase nodeCase tree =
     case tree of

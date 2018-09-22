@@ -6,6 +6,7 @@ import Html.Attributes as Attribute
 import Html.Events as Event
 import Plane exposing (Box, Point, boundingbox, boxToSvg, fromPair, point, pointToSvg)
 import Quadtree exposing (Quadtree, quadtreeToSvg)
+import Quadtree.Kernel exposing (CountInfo, count)
 import Random
 import Svg
 import Svg.Attributes as SvgAttribute
@@ -90,6 +91,9 @@ update message model =
 view : Model -> Html.Html Message
 view model =
     let
+        info =
+            count model.quadtree
+
         svg =
             model.quadtree
                 |> quadtreeToSvg (pointToSvg identity)
@@ -102,6 +106,7 @@ view model =
     Html.div []
         [ Html.div [ Attribute.class "control" ]
             [ Html.button [ Event.onClick GeneratePoints ] [ Html.text "generate" ]
+            , viewInfo info
             ]
         , Svg.svg
             [ SvgAttribute.width "640"
@@ -109,4 +114,21 @@ view model =
             , SvgAttribute.viewBox viewBox
             ]
             svg
+        ]
+
+
+viewInfo : CountInfo -> Html.Html msg
+viewInfo info =
+    let
+        total = info.empty + info.leaf + info.node
+    in
+    Html.span [ Attribute.class "count" ]
+        [ Html.text "empty: "
+        , Html.text (String.fromInt info.empty)
+        , Html.text " leaf: "
+        , Html.text (String.fromInt info.leaf)
+        , Html.text " node: "
+        , Html.text (String.fromInt info.node)
+        , Html.text " total: "
+        , Html.text (String.fromInt total)
         ]
