@@ -6,7 +6,7 @@ import Html.Attributes as Attribute
 import Html.Events as Event
 import Plane exposing (Box, Point, boundingbox, boxToSvg, fromPair, point, pointToSvg)
 import Quadtree exposing (Quadtree, quadtreeToSvg)
-import Quadtree.Kernel exposing (CountInfo, count)
+import Quadtree.Kernel as Kernel exposing (CountInfo)
 import Random
 import Svg
 import Svg.Attributes as SvgAttribute
@@ -92,7 +92,10 @@ view : Model -> Html.Html Message
 view model =
     let
         info =
-            count model.quadtree
+            Kernel.count model.quadtree
+
+        depth =
+            Kernel.depth model.quadtree
 
         svg =
             model.quadtree
@@ -107,6 +110,8 @@ view model =
         [ Html.div [ Attribute.class "control" ]
             [ Html.button [ Event.onClick GeneratePoints ] [ Html.text "generate" ]
             , viewInfo info
+            , Html.span [] [ Html.text " depth: "
+                           , Html.text (String.fromInt depth)]
             ]
         , Svg.svg
             [ SvgAttribute.width "640"

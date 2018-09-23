@@ -1,4 +1,4 @@
-module Quadtree.Kernel exposing (CountInfo, Quadtree, count, debug, empty, node, singleton, walk)
+module Quadtree.Kernel exposing (CountInfo, Quadtree, count, debug, depth, empty, node, singleton, walk)
 
 {-| A quadtree is a tree data structure in which each internal node has exactly four children
 -}
@@ -75,11 +75,34 @@ count tree =
             }
 
         nodeCase _ ne nw sw se =
-            {emptyInfo | node = 1 }
+            { emptyInfo | node = 1 }
                 |> combine ne
                 |> combine nw
                 |> combine sw
                 |> combine se
+    in
+    walk emptyCase leafCase nodeCase tree
+
+
+{-| Determine the depth of a `Quadtree`.
+-}
+depth : Quadtree i a -> Int
+depth tree =
+    let
+        emptyCase _ =
+            0
+
+        leafCase _ _ =
+            0
+
+        imax a b c d =
+            a
+                |> max b
+                |> max c
+                |> max d
+
+        nodeCase _ ne nw sw se =
+            1 + imax ne nw sw se
     in
     walk emptyCase leafCase nodeCase tree
 
